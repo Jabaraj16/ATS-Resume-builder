@@ -15,7 +15,7 @@ const Register = () => {
     const [step, setStep] = useState('register'); // 'register' | 'otp'
     const [otp, setOtp] = useState('');
 
-    const { register, verifyOTP } = useAuth();
+    const { register, verifyOTP, resendOTP } = useAuth();
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -53,6 +53,17 @@ const Register = () => {
             navigate('/templates');
         } else {
             toast.error(res.error);
+        }
+        setLoading(false);
+    };
+
+    const handleResendOTP = async () => {
+        setLoading(true);
+        const res = await resendOTP(email);
+        if (res.success) {
+            toast.success('OTP Resent!');
+        } else {
+            toast.error(res.error || 'Failed to resend OTP');
         }
         setLoading(false);
     };
@@ -183,6 +194,16 @@ const Register = () => {
                             ) : (
                                 <>Verify & Login <ArrowRight size={18} /></>
                             )}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleResendOTP}
+                            disabled={loading}
+                            className="btn btn-ghost"
+                            style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem', fontSize: '0.9rem', color: 'var(--color-primary)' }}
+                        >
+                            Resend OTP
                         </button>
                     </form>
                 )}
