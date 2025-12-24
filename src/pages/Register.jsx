@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
@@ -14,9 +14,26 @@ const Register = () => {
     // OTP State
     const [step, setStep] = useState('register'); // 'register' | 'otp'
     const [otp, setOtp] = useState('');
+    const [timer, setTimer] = useState(30);
+    const [canResend, setCanResend] = useState(false);
+
+    // Timer Effect
+    React.useEffect(() => {
+        let interval;
+        if (step === 'otp' && timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1);
+            }, 1000);
+        } else if (timer === 0) {
+            setCanResend(true);
+        }
+        return () => clearInterval(interval);
+    }, [step, timer]);
 
     const { register, verifyOTP, resendOTP } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || '/templates';
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -32,6 +49,8 @@ const Register = () => {
         if (res.success && res.requireOTP) {
             toast.success('OTP sent to your email!');
             setStep('otp');
+            setTimer(30);
+            setCanResend(false);
         } else {
             if (res.error === 'User already exists') {
                 toast.error('User already registered. Redirecting to login...');
@@ -49,8 +68,8 @@ const Register = () => {
 
         const res = await verifyOTP(email, otp);
         if (res.success) {
-            toast.success('Email verified! Welcome aboard.');
-            navigate('/templates');
+            toast.success('Successfully Registered! Please Login.');
+            navigate('/login', { state: { from } });
         } else {
             toast.error(res.error);
         }
@@ -62,6 +81,8 @@ const Register = () => {
         const res = await resendOTP(email);
         if (res.success) {
             toast.success('OTP Resent!');
+            setTimer(30);
+            setCanResend(false);
         } else {
             toast.error(res.error || 'Failed to resend OTP');
         }
@@ -170,7 +191,12 @@ const Register = () => {
                                 <input
                                     type="text"
                                     value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (/^\d*$/.test(val)) {
+                                            setOtp(val);
+                                        }
+                                    }}
                                     required
                                     className="input"
                                     placeholder="123456"
@@ -199,11 +225,18 @@ const Register = () => {
                         <button
                             type="button"
                             onClick={handleResendOTP}
-                            disabled={loading}
+                            disabled={loading || !canResend}
                             className="btn btn-ghost"
-                            style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem', fontSize: '0.9rem', color: 'var(--color-primary)' }}
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                marginTop: '0.5rem',
+                                fontSize: '0.9rem',
+                                color: canResend ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                                cursor: canResend ? 'pointer' : 'not-allowed'
+                            }}
                         >
-                            Resend OTP
+                            {canResend ? 'Resend OTP' : `Resend OTP in ${timer}s`}
                         </button>
                     </form>
                 )}

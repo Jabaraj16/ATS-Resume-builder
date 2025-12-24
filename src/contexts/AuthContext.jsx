@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { loginAPI, registerAPI, meAPI, verifyOTPAPI } from '../services/allAPI';
+import { loginAPI, registerAPI, meAPI, verifyOTPAPI, resendOTPAPI } from '../services/allAPI';
 
 const AuthContext = createContext(null);
 
@@ -38,6 +38,10 @@ export const AuthProvider = ({ children }) => {
         try {
             const res = await loginAPI({ email, password });
             if (res.status === 200 && res.data.success) {
+                if (res.data.requireOTP) {
+                    return { success: true, requireOTP: true, email: res.data.email };
+                }
+                // Fallback for legacy (shouldn't happen with new logic)
                 sessionStorage.setItem('token', res.data.token);
                 setUser(res.data.user);
                 return { success: true };
@@ -45,31 +49,17 @@ export const AuthProvider = ({ children }) => {
                 return { success: false, error: res.response?.data?.message || res.data?.message || 'Login failed' };
             }
         } catch (error) {
-            return { success: false, error: 'Server error' };
+            return { success: false, error: error.response?.data?.message || 'Server error' };
         }
     };
 
-    const register = async (name, email, password) => {
-        try {
-            const res = await registerAPI({ name, email, password });
-            // Backend now returns 200 for successful OTP send
-            if (res.status === 200 && res.data.success) {
-                // Do NOT login yet. Return success to let component handle OTP flow.
-                return { success: true, requireOTP: true, email: res.data.email };
-            } else {
-                return { success: false, error: res.response?.data?.message || res.data?.message || 'Registration failed' };
-            }
-        } catch (error) {
-            return { success: false, error: 'Server error' };
-        }
-    };
+    // ... register ...
 
     const verifyOTP = async (email, otp) => {
         try {
             const res = await verifyOTPAPI({ email, otp });
             if (res.status === 200 && res.data.success) {
-                sessionStorage.setItem('token', res.data.token);
-                setUser(res.data.user);
+                // Register OTP success -> Redirect to Login (No Token)
                 return { success: true };
             } else {
                 return { success: false, error: res.response?.data?.message || res.data?.message || 'Verification failed' };
@@ -79,13 +69,41 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const verifyLoginOTP = async (email, otp) => {
+        try {
+            const res = await verifyLoginOTPAPI({ email, otp });
+            if (res.status === 200 && res.data.success) {
+                sessionStorage.setItem('token', res.data.token);
+                setUser(res.data.user);
+                return { success: true };
+            } else {
+                return { success: false, error: res.response?.data?.message || 'Verification failed' };
+            }
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'Server error' };
+        }
+    };
+
+    const resendOTP = async (email) => {
+        try {
+            const res = await resendOTPAPI({ email });
+            if (res.status === 200 && res.data.success) {
+                return { success: true };
+            } else {
+                return { success: false, error: res.response?.data?.message || 'Failed to resend' };
+            }
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || error.message };
+        }
+    };
+
     const logout = () => {
         sessionStorage.removeItem('token');
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, verifyOTP, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, verifyOTP, verifyLoginOTP, resendOTP, logout, loading }}>
             {!loading && children}
         </AuthContext.Provider>
     );

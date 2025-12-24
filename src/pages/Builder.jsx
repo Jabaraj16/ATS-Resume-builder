@@ -20,7 +20,7 @@ const Builder = () => {
         if (!user) {
             toast.error('Login required to download PDF', { icon: '🔒' });
             // Optional: Redirect to login or just let them know
-            setTimeout(() => navigate('/login'), 1500);
+            setTimeout(() => navigate('/login', { state: { from: '/builder' } }), 1500);
             return;
         }
 
