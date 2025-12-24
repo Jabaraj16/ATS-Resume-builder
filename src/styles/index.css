@@ -1,0 +1,346 @@
+:root {
+  /* HSL Color Palette - Premium Look */
+  --primary-hue: 230;
+  /* Deep Blue/Indigo */
+  --primary-sat: 65%;
+  --primary-light: 50%;
+
+  --color-primary: hsl(var(--primary-hue), var(--primary-sat), var(--primary-light));
+  --color-primary-dark: hsl(var(--primary-hue), var(--primary-sat), 35%);
+  --color-primary-light: hsl(var(--primary-hue), var(--primary-sat), 90%);
+
+  --color-accent: hsl(330, 80%, 55%);
+  /* Pink/Magenta accent */
+
+  --color-bg: hsl(220, 20%, 97%);
+  /* Light Gray Blue hint */
+  --color-surface: #ffffff;
+  --color-surface-hover: #f8fafc;
+  --color-text: hsl(220, 20%, 15%);
+  --color-text-muted: hsl(220, 15%, 45%);
+  --color-border: #e2e8f0;
+  --color-danger: #ef4444;
+  --color-danger-dark: #dc2626;
+
+  --wrapper-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+
+  --font-main: 'Outfit', sans-serif;
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+[data-theme='dark'] {
+  --color-bg: hsl(220, 20%, 10%);
+  --color-surface: hsl(220, 20%, 15%);
+  --color-surface-hover: hsl(220, 20%, 20%);
+  --color-text: hsl(220, 20%, 95%);
+  --color-text-muted: hsl(220, 15%, 70%);
+  --color-border: hsl(220, 20%, 25%);
+
+  --color-primary-light: hsl(var(--primary-hue), var(--primary-sat), 25%);
+
+  --wrapper-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(var(--primary-hue), var(--primary-sat), 50%, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px -1px rgba(var(--primary-hue), var(--primary-sat), 50%, 0.4);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-outline:hover {
+  background-color: var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background-color: var(--color-danger);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  background-color: var(--color-danger-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px -1px rgba(239, 68, 68, 0.4);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: all 0.2s;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --radius-lg: 0.75rem;
+  }
+
+  h1 {
+    font-size: 2.5rem !important;
+    /* Override inline styles if necessary */
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  /* Utilities for mobile */
+  .hidden-mobile {
+    display: none !important;
+  }
+
+  .flex-col-mobile {
+    flex-direction: column !important;
+  }
+
+  .w-full-mobile {
+    width: 100% !important;
+  }
+}
+
+
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem !important;
+  }
+}
+
+/* Builder Specifics */
+.builder-layout {
+  display: flex;
+  min-height: calc(100vh - 140px);
+  overflow: hidden;
+  padding-bottom: 2rem;
+}
+
+.builder-sidebar {
+  width: 40%;
+  border-right: 1px solid #ddd;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.builder-preview {
+  flex: 1;
+  background: #f1f5f9;
+}
+
+@media (max-width: 768px) {
+  .builder-layout {
+    flex-direction: column;
+    overflow: visible;
+    /* Allow scrolling on mobile */
+    height: auto;
+  }
+
+  .builder-sidebar {
+    width: 100%;
+    border-right: none;
+    height: auto;
+    min-height: 60vh;
+    /* Give it space */
+  }
+
+  .builder-preview {
+    display: none;
+    /* Hide preview pane on mobile, rely on modal */
+  }
+}
+
+/* Resume Preview & Modal */
+.resume-preview-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 2rem;
+  background: var(--color-surface-hover);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.resume-document {
+  width: 210mm;
+  min-width: 210mm;
+  min-height: 297mm;
+  height: auto;
+  overflow: visible;
+  color: black;
+  background: linear-gradient(to bottom, white 0%, white 99.8%, #e2e8f0 99.8%, #e2e8f0 100%);
+  background-size: 100% 297mm;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  color-scheme: light;
+  margin: 0 auto;
+}
+
+.preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .resume-preview-container {
+    padding: 1rem;
+    align-items: flex-start;
+    /* Ensure top of resume is visible */
+  }
+
+  .preview-modal {
+    padding: 0;
+  }
+
+  /* On mobile preview, scale down the resume to fit width if desired, 
+     OR just let it scroll. Usually scrolling is better for readability. 
+     But let's remove the extra padding from the container in modal. */
+  .preview-modal .resume-preview-container {
+    padding: 0.5rem;
+  }
+
+  /* Scale transform for "fit to screen" is tricky without JS measuring width.
+     For now, we just maximize space. */
+}
