@@ -25,3 +25,8 @@ export const uploadPhotoAPI = async (reqBody, reqHeader) => {
 export const meAPI = async (reqHeader) => {
     return await commonAPI("GET", `${SERVER_URL}/api/auth/me`, "", reqHeader);
 };
+
+// ATS Analysis API
+export const atsAnalysisAPI = async (reqBody, reqHeader) => {
+    return await commonAPI("POST", `${SERVER_URL}/api/ats/analyze`, reqBody, reqHeader);
+};
