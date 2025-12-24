@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5000/api/resume';
+import { SERVER_URL } from "../services/serverUrl";
+
+const API_URL = `${SERVER_URL}/api/resume`;
 
 export const parseResume = async (file) => {
     const formData = new FormData();
