@@ -242,7 +242,7 @@ const Register = () => {
                 )}
 
                 <p style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
-                    Already have an account? <Link to="/login" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Log in</Link>
+                    Already have an account? <Link to="/login" state={{ from }} style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Log in</Link>
                 </p>
             </motion.div>
         </div>

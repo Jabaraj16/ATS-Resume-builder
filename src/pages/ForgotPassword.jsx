@@ -11,7 +11,25 @@ const ForgotPassword = () => {
     const [otp, setOtp] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Timer State
+    const [timer, setTimer] = useState(30);
+    const [canResend, setCanResend] = useState(false);
+
     const navigate = useNavigate();
+
+    // Timer Effect
+    React.useEffect(() => {
+        let interval;
+        if (step === 'reset' && timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1);
+            }, 1000);
+        } else if (timer === 0) {
+            setCanResend(true);
+        }
+        return () => clearInterval(interval);
+    }, [step, timer]);
 
     const handleSendOTP = async (e) => {
         e.preventDefault();
@@ -21,11 +39,30 @@ const ForgotPassword = () => {
             if (res.status === 200 && res.data.success) {
                 toast.success('OTP sent to your email');
                 setStep('reset');
+                setTimer(30);
+                setCanResend(false);
             } else {
                 toast.error(res.response?.data?.message || 'Failed to send OTP');
             }
         } catch (error) {
             toast.error('Something went wrong');
+        }
+        setLoading(false);
+    };
+
+    const handleResendOTP = async () => {
+        setLoading(true);
+        try {
+            const res = await forgotPasswordAPI({ email });
+            if (res.status === 200 && res.data.success) {
+                toast.success('OTP Resent!');
+                setTimer(30);
+                setCanResend(false);
+            } else {
+                toast.error(res.response?.data?.message || 'Failed to resend OTP');
+            }
+        } catch (error) {
+            toast.error('Failed to resend');
         }
         setLoading(false);
     };
@@ -119,7 +156,10 @@ const ForgotPassword = () => {
                                 <input
                                     type="text"
                                     value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (/^\d*$/.test(val)) setOtp(val);
+                                    }}
                                     required
                                     className="input"
                                     placeholder="123456"
@@ -160,6 +200,23 @@ const ForgotPassword = () => {
                             ) : (
                                 <>Set New Password <ArrowRight size={18} /></>
                             )}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleResendOTP}
+                            disabled={loading || !canResend}
+                            className="btn btn-ghost"
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                marginTop: '0.5rem',
+                                fontSize: '0.9rem',
+                                color: canResend ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                                cursor: canResend ? 'pointer' : 'not-allowed'
+                            }}
+                        >
+                            {canResend ? 'Resend OTP' : `Resend OTP in ${timer}s`}
                         </button>
                     </form>
                 )}

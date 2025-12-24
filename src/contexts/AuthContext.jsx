@@ -53,7 +53,20 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // ... register ...
+    const register = async (name, email, password) => {
+        try {
+            const res = await registerAPI({ name, email, password });
+            // Backend now returns 200 for successful OTP send
+            if (res.status === 200 && res.data.success) {
+                // Do NOT login yet. Return success to let component handle OTP flow.
+                return { success: true, requireOTP: true, email: res.data.email };
+            } else {
+                return { success: false, error: res.response?.data?.message || res.data?.message || 'Registration failed' };
+            }
+        } catch (error) {
+            return { success: false, error: 'Server error' };
+        }
+    };
 
     const verifyOTP = async (email, otp) => {
         try {

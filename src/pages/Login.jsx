@@ -18,6 +18,8 @@ const Login = () => {
 
     const { login, verifyLoginOTP, resendOTP } = useAuth(); // Assume resendOTP works for login too
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || '/templates';
 
     // Timer Effect
     React.useEffect(() => {
@@ -219,7 +221,7 @@ const Login = () => {
                 )}
 
                 <p style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
-                    New to ResumeAI? <Link to="/register" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Create an account</Link>
+                    New to ResumeAI? <Link to="/register" state={{ from }} style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Create an account</Link>
                 </p>
             </motion.div>
         </div>
