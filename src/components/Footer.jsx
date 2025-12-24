@@ -43,7 +43,7 @@ const Footer = () => {
                         <a href="#" style={{ color: 'var(--color-text)', opacity: 0.7 }}><Twitter size={20} /></a>
                     </div>
                     <p style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        Made with <Heart size={14} fill="var(--color-primary)" color="var(--color-primary)" /> by Antigravity © {currentYear}
+                        Made with <Heart size={14} fill="var(--color-primary)" color="var(--color-primary)" /> by Jabaraj © {currentYear}
                     </p>
                 </div>
             </div>
