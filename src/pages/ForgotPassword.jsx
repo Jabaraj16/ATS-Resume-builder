@@ -1,58 +1,48 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { forgotPasswordAPI, resetPasswordAPI } from '../services/allAPI';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { UserPlus, User, Mail, Lock, ArrowRight, Loader } from 'lucide-react';
+import { KeyRound, Mail, Lock, ArrowRight, Loader, ArrowLeft } from 'lucide-react';
 
-const Register = () => {
-    const [name, setName] = useState('');
+const ForgotPassword = () => {
+    const [step, setStep] = useState('email'); // 'email' | 'reset'
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    // OTP State
-    const [step, setStep] = useState('register'); // 'register' | 'otp'
     const [otp, setOtp] = useState('');
-
-    const { register, verifyOTP } = useAuth();
+    const [newPassword, setNewPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleRegister = async (e) => {
+    const handleSendOTP = async (e) => {
         e.preventDefault();
         setLoading(true);
-
-        if (password.length < 6) {
-            toast.error('Password too short (min 6 chars)');
-            setLoading(false);
-            return;
-        }
-
-        const res = await register(name, email, password);
-        if (res.success && res.requireOTP) {
-            toast.success('OTP sent to your email!');
-            setStep('otp');
-        } else {
-            if (res.error === 'User already exists') {
-                toast.error('User already registered. Redirecting to login...');
-                setTimeout(() => navigate('/login'), 2000);
+        try {
+            const res = await forgotPasswordAPI({ email });
+            if (res.status === 200 && res.data.success) {
+                toast.success('OTP sent to your email');
+                setStep('reset');
             } else {
-                toast.error(res.error);
+                toast.error(res.response?.data?.message || 'Failed to send OTP');
             }
+        } catch (error) {
+            toast.error('Something went wrong');
         }
         setLoading(false);
     };
 
-    const handleVerify = async (e) => {
+    const handleResetPassword = async (e) => {
         e.preventDefault();
         setLoading(true);
-
-        const res = await verifyOTP(email, otp);
-        if (res.success) {
-            toast.success('Email verified! Welcome aboard.');
-            navigate('/templates');
-        } else {
-            toast.error(res.error);
+        try {
+            const res = await resetPasswordAPI({ email, otp, newPassword });
+            if (res.status === 200 && res.data.success) {
+                toast.success('Password reset successful! Please login.');
+                navigate('/login');
+            } else {
+                toast.error(res.response?.data?.message || 'Failed to reset password');
+            }
+        } catch (error) {
+            toast.error('Something went wrong');
         }
         setLoading(false);
     };
@@ -62,9 +52,9 @@ const Register = () => {
             {/* Background Decor */}
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1, background: 'var(--wrapper-bg)' }}></div>
             <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%)', borderRadius: '50%' }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
+                style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%)', borderRadius: '50%' }}
             />
 
             <motion.div
@@ -72,37 +62,22 @@ const Register = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="glass-panel"
-                style={{ padding: '2rem', width: '100%', maxWidth: '480px', borderRadius: '1.5rem', maxHeight: '90vh', overflowY: 'auto' }}
+                style={{ padding: '2rem', width: '100%', maxWidth: '420px', borderRadius: '1.5rem', maxHeight: '90vh', overflowY: 'auto' }}
             >
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                     <div style={{ display: 'inline-flex', padding: '10px', background: 'rgba(var(--primary-hue), var(--primary-sat), 50%, 0.1)', borderRadius: '50%', marginBottom: '0.75rem', color: 'var(--color-primary)' }}>
-                        <UserPlus size={24} />
+                        <KeyRound size={24} />
                     </div>
                     <h2 style={{ fontSize: '1.5rem', color: 'var(--color-text)', marginBottom: '0.25rem' }}>
-                        {step === 'register' ? 'Create Account' : 'Verify Email'}
+                        {step === 'email' ? 'Forgot Password?' : 'Reset Password'}
                     </h2>
                     <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-                        {step === 'register' ? 'Start building your professional resume' : `Enter the OTP sent to ${email}`}
+                        {step === 'email' ? 'Enter your email to verify it\'s you' : 'Enter OTP and create a new password'}
                     </p>
                 </div>
 
-                {step === 'register' ? (
-                    <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                        <div>
-                            <label className="label">Full Name</label>
-                            <div style={{ position: 'relative' }}>
-                                <User size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                    className="input"
-                                    placeholder="John Doe"
-                                    style={{ paddingLeft: '2.5rem' }}
-                                />
-                            </div>
-                        </div>
+                {step === 'email' ? (
+                    <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                         <div>
                             <label className="label">Email Address</label>
                             <div style={{ position: 'relative' }}>
@@ -114,21 +89,6 @@ const Register = () => {
                                     required
                                     className="input"
                                     placeholder="name@example.com"
-                                    style={{ paddingLeft: '2.5rem' }}
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="label">Password</label>
-                            <div style={{ position: 'relative' }}>
-                                <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    className="input"
-                                    placeholder="••••••••"
                                     style={{ paddingLeft: '2.5rem' }}
                                 />
                             </div>
@@ -146,12 +106,12 @@ const Register = () => {
                                     Sending OTP...
                                 </>
                             ) : (
-                                <>Get OTP <ArrowRight size={18} /></>
+                                <>Verify Email <ArrowRight size={18} /></>
                             )}
                         </button>
                     </form>
                 ) : (
-                    <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                         <div>
                             <label className="label">Enter OTP</label>
                             <div style={{ position: 'relative' }}>
@@ -169,6 +129,23 @@ const Register = () => {
                             </div>
                         </div>
 
+                        <div>
+                            <label className="label">New Password</label>
+                            <div style={{ position: 'relative' }}>
+                                <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                <input
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    required
+                                    className="input"
+                                    placeholder="Min 6 characters"
+                                    style={{ paddingLeft: '2.5rem' }}
+                                    minLength={6}
+                                />
+                            </div>
+                        </div>
+
                         <button type="submit" disabled={loading} className="btn btn-primary" style={{ width: '100%', padding: '1rem', marginTop: '0.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
                             {loading ? (
                                 <>
@@ -178,21 +155,23 @@ const Register = () => {
                                     >
                                         <Loader size={18} />
                                     </motion.div>
-                                    Verifying...
+                                    Resetting...
                                 </>
                             ) : (
-                                <>Verify & Login <ArrowRight size={18} /></>
+                                <>Set New Password <ArrowRight size={18} /></>
                             )}
                         </button>
                     </form>
                 )}
 
                 <p style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
-                    Already have an account? <Link to="/login" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Log in</Link>
+                    <Link to="/login" style={{ color: 'var(--color-text-muted)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        <ArrowLeft size={14} /> Back to Login
+                    </Link>
                 </p>
             </motion.div>
         </div>
     );
 };
 
-export default Register;
+export default ForgotPassword;

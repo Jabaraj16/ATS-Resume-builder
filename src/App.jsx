@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Builder from './pages/Builder';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import TemplateSelection from './pages/TemplateSelection';
 import ATSChecker from './pages/ATSChecker';
 
@@ -114,6 +115,7 @@ function App() {
                 <Route path="/ats-check" element={<ATSChecker />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/templates" element={<TemplateSelection />} />
                 <Route path="/builder" element={<Builder />} />

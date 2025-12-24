@@ -71,7 +71,7 @@ const Login = () => {
                     <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                             <label className="label" style={{ marginBottom: 0 }}>Password</label>
-                            <a href="#" style={{ fontSize: '0.85rem', color: 'var(--color-primary)', textDecoration: 'none' }}>Forgot?</a>
+                            <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--color-primary)', textDecoration: 'none' }}>Forgot?</Link>
                         </div>
                         <div style={{ position: 'relative' }}>
                             <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />

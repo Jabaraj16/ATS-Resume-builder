@@ -11,6 +11,26 @@ export const loginAPI = async (user) => {
     return await commonAPI("POST", `${SERVER_URL}/api/auth/login`, user, "");
 };
 
+// Verify OTP API
+export const verifyOTPAPI = async (reqBody) => {
+    return await commonAPI("POST", `${SERVER_URL}/api/auth/verify-otp`, reqBody, "");
+};
+
+// Resend OTP API
+export const resendOTPAPI = async (reqBody) => {
+    return await commonAPI("POST", `${SERVER_URL}/api/auth/resend-otp`, reqBody, "");
+};
+
+// Forgot Password API
+export const forgotPasswordAPI = async (reqBody) => {
+    return await commonAPI("POST", `${SERVER_URL}/api/auth/forgot-password`, reqBody, "");
+};
+
+// Reset Password API
+export const resetPasswordAPI = async (reqBody) => {
+    return await commonAPI("POST", `${SERVER_URL}/api/auth/reset-password`, reqBody, "");
+};
+
 // Parse Resume API
 export const parseResumeAPI = async (reqBody, reqHeader) => {
     return await commonAPI("POST", `${SERVER_URL}/api/resume/parse`, reqBody, reqHeader);
